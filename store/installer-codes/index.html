@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LiteStream Studio – Installer exit codes</title>
+<style>body{font:16px/1.6 system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#1b2430}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccd3dc;padding:8px;text-align:left}</style></head><body>
+<h1>LiteStream Studio – Installer exit codes</h1>
+<p>The LiteStream Studio installer is built with NSIS and installs silently with <code>/S</code> (per-user, no administrator rights needed). Uninstall with <code>/S</code> from the uninstaller in the install folder.</p>
+<table><tr><th>Exit code</th><th>Meaning</th></tr>
+<tr><td>0</td><td>Installation completed successfully.</td></tr>
+<tr><td>1</td><td>Installation cancelled by the user.</td></tr>
+<tr><td>2</td><td>Installation aborted by the installer (for example, a required condition was not met).</td></tr>
+<tr><td>Any other non-zero value</td><td>Installation failed with an unexpected error.</td></tr></table>
+<p>The installer does not return dedicated codes for "already installed", "installation already in progress", "disk full" or "reboot required"; those situations are handled by the installer itself (it upgrades in place) or reported as a generic failure.</p>
+<p>Contact: sirpeterbaraka@gmail.com · <a href="https://pinchezmedia254.netlify.app">pinchezmedia254.netlify.app</a></p>
+</body></html>
