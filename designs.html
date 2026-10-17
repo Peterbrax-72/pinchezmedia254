@@ -190,12 +190,42 @@ footer.sf{align-items:center;gap:20px}
 .vh{font-weight:800;letter-spacing:-.04em;max-width:none;margin:0;padding:28px 0 8px;font-size:clamp(38px,7vw,84px)}.vh em{font-style:normal;color:var(--tang)}
 :root{--gh:#181717}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gh:#F0F6FC}}
+/*resp*/
+:root{--gut:clamp(16px,4.4vw,48px)}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-wrap:break-word}
+img{max-width:100%}
+.w{max-width:1280px;padding-inline:max(var(--gut),env(safe-area-inset-left,0px)) max(var(--gut),env(safe-area-inset-right,0px))}
+.cp{padding-block:48px 80px;padding-inline:max(var(--gut),env(safe-area-inset-left,0px)) max(var(--gut),env(safe-area-inset-right,0px))}
+.hg>*,.pgrid>*,.offer>*,.cg>*,.sg>*,.nf>*,.mosaic>*,.revs>*,.steps>*,.pj>*,.bi>*{min-width:0}
+.hero{overflow-x:clip}
+@media (max-width:980px){
+ .bar{gap:8px 12px;padding:16px 0 6px}
+ .bar nav{order:3;flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;gap:22px;padding:2px 0 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .bar nav::-webkit-scrollbar{display:none}
+ .bar nav a{white-space:nowrap;padding:9px 0}
+}
+@media (max-width:640px){
+ .bar nav{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+ .brand{font-size:16px;gap:10px}.brand img{width:48px;height:48px}
+ .pill{padding:9px 16px;font-size:14px}
+}
+@media (max-width:760px){section{padding-block:56px}}
+@media (max-width:380px){.brand{font-size:15px;gap:8px}.brand img{width:42px;height:42px}.pill{padding:8px 13px;font-size:13px}}
+@media (max-width:520px){
+ .stage{height:300px}
+ .badge{margin:0 48px}.badge .bd{padding:18px 24px}.badge b{font-size:60px}.badge .wing{width:70px;height:52px;margin-top:-26px}.badge .wing.l{left:-48px}.badge .wing.r{right:-48px}
+ .tile,.pc,.pcard,.rev{padding-left:20px;padding-right:20px}
+ .code{font-size:13px;padding:18px 18px}
+ .band .btn,.go .btn{flex:1 1 auto;text-align:center}
+}
+@media (min-width:1600px){html{font-size:106%}}
 </style>
 </head>
 <body>
 <div class="hero"><div class="w">
  <div class="bar"><a class="brand" href="/"><img src="/logo.png" alt="Pinchez Media 254 logo" width="56" height="56"><span>Peter Baraka</span></a>
-  <nav aria-label="Main"><a href="/">Home</a><a href="/projects.html">Projects</a><a href="/faq.html">FAQ</a><a href="/designs.html" aria-current="page">Designs</a></nav><a class="pill" href="/contact.html">Contact me</a></div>
+  <nav aria-label="Main"><a href="/">Home</a><a href="/projects.html">Projects</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a><a href="/designs.html" aria-current="page">Designs</a></nav><a class="pill" href="/contact.html">Contact me</a></div>
  <h1 style="padding:28px 0 8px;font-size:clamp(38px,7vw,84px)">My designs <em>gallery</em></h1><p class="lead2">Posters, flyers, CV layouts, banners and branding made for real clients in Kenya and beyond.</p>
 </div></div>
 <main class="w cp">
@@ -227,5 +257,6 @@ function closeLb(){lb.classList.remove("open")}
 document.getElementById("lbx").onclick=closeLb;lb.onclick=function(e){if(e.target===lb)closeLb()};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeLb()});
 drawG();</script>
+<script>(function(){var a=document.querySelector('.bar nav [aria-current]');if(a&&a.scrollIntoView)a.scrollIntoView({inline:'center',block:'nearest'})})();</script>
 </body>
 </html>
