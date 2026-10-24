@@ -1,0 +1,5 @@
+# Use this ONLY if peterbarakaphilip.netlify.app is deployed from a different repo/folder than the new site.
+# Save as a file named exactly  _redirects  in that site's root and redeploy it.
+/cv/*  /cv/:splat  200
+/google8177f58bb5527637.html  /google8177f58bb5527637.html  200
+/*  https://pinchezmedia254.netlify.app/:splat  301!

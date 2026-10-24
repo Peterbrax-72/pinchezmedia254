@@ -1,0 +1,26 @@
+Pinchez Media 254 site update (final)
+=====================================
+Upload EVERYTHING in this folder to the root of the site, replacing old files:
+  Pages:     index, about (NEW), hire (NEW), pricing, projects, designs, faq, contact, privacy, terms, 404 (.html)
+  Images:    img/projects/*.webp (NEW: screenshots that used to be embedded inside projects.html)
+  SEO files: sitemap.xml, robots.txt, _redirects
+  Unchanged: google8177f58bb5527637.html, README.md
+Not included (already in your repo): logo.png, favicon.*, og-image.png, apple-touch-icon.png, design/ images, cv/ files.
+
+IMPORTANT: the old _redirects sent /about and /about.html to the home page. The new _redirects removes those two
+lines, otherwise the new About page could never be reached. Make sure the new _redirects is the one that gets deployed.
+
+Old domain (peterbarakaphilip.netlify.app)
+  - Same repo deployed on both sites: the new _redirects already contains the rules. Nothing else to do.
+  - Separate repo for the old site: put OLD-SITE_redirects.txt in that site's root, renamed to exactly "_redirects", and redeploy.
+  These rules 301-redirect everything to the new domain but keep /cv/* and the Google verification file working on the old host,
+  because hire.html links to the CV PDFs there. Move the cv/ folder into this site later and update the links if you want to retire the old host.
+
+After deploying: Google Search Console
+  1. Add https://pinchezmedia254.netlify.app/ as a property and verify it.
+  2. Sitemaps > submit sitemap.xml.
+  3. URL Inspection > Request indexing for, in order: /about.html, /, /hire.html, /pricing.html, /projects.html
+  4. Test markup: search.google.com/test/rich-results with /about.html
+  5. In Netlify: Site configuration > Build & deploy > Post processing > Asset optimization.
+     If "Pretty URLs" is ON, Netlify rewrites links to /pricing instead of /pricing.html. Then change the canonical and sitemap URLs
+     to the extensionless form, or turn Pretty URLs OFF, so canonical = the URL that actually loads. (Tell me which and I will update the files.)

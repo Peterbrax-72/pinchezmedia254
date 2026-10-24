@@ -1,9 +1,14 @@
+# Old one-page portfolio URLs now point to the home page
 /index.html /  301
-/about /  301
-/about.html /  301
 /career /  301
 /career.html /  301
 /skills /  301
 /skills.html /  301
 /testimonials /  301
 /testimonials.html /  301
+
+# If this same repo is also deployed at peterbarakaphilip.netlify.app, send all of its traffic to the main domain.
+# CV files and the Search Console verification file keep being served from the old host.
+https://peterbarakaphilip.netlify.app/cv/*  /cv/:splat  200
+https://peterbarakaphilip.netlify.app/google8177f58bb5527637.html  /google8177f58bb5527637.html  200
+https://peterbarakaphilip.netlify.app/*  https://pinchezmedia254.netlify.app/:splat  301!
