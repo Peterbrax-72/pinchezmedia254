@@ -1,7 +1,7 @@
 Pinchez Media 254 site update (final)
 =====================================
 Upload EVERYTHING in this folder to the root of the site, replacing old files:
-  Pages:     index, about (NEW), hire (NEW), pricing, projects, designs, faq, contact, privacy, terms, 404 (.html)
+  Pages:     index, about (NEW), hire (NEW), pricing, projects, designs, faq, contact (now accepts Microsoft Store app support), privacy, terms, 404 (.html)
   Images:    img/projects/*.webp (NEW: screenshots that used to be embedded inside projects.html)
   SEO files: sitemap.xml, robots.txt, _redirects
   Unchanged: google8177f58bb5527637.html, README.md
@@ -24,3 +24,12 @@ After deploying: Google Search Console
   5. In Netlify: Site configuration > Build & deploy > Post processing > Asset optimization.
      If "Pretty URLs" is ON, Netlify rewrites links to /pricing instead of /pricing.html. Then change the canonical and sitemap URLs
      to the extensionless form, or turn Pretty URLs OFF, so canonical = the URL that actually loads. (Tell me which and I will update the files.)
+
+Final checklist (about 10 minutes)
+  [ ] Upload the whole folder (including img/projects/) and deploy.
+  [ ] Open /about.html, /hire.html, /contact.html?need=App%20support%20(Microsoft%20Store) to confirm they load.
+  [ ] Send one test message from the contact form (a normal one and an app-support one) and check both arrive.
+  [ ] Open the old domain: it should land on the new site; /cv/... PDFs should still open.
+  [ ] Search Console: submit sitemap.xml, request indexing for /about.html first.
+  [ ] Partner Center: set the app support contact to the contact page link with the app pre-selected.
+Optional later: add width/height to the design gallery images (needs the image files), and a custom domain.
