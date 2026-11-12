@@ -12,3 +12,24 @@
 https://peterbarakaphilip.netlify.app/cv/*  /cv/:splat  200
 https://peterbarakaphilip.netlify.app/google8177f58bb5527637.html  /google8177f58bb5527637.html  200
 https://peterbarakaphilip.netlify.app/*  https://pinchezmedia254.netlify.app/:splat  301!
+
+# Clean URLs: each page has ONE address (no .html). The .html form redirects to it,
+# so Google never sees duplicate pages. Keep Netlify "Pretty URLs" OFF (or ON, both work).
+/about.html     /about     301!
+/contact.html   /contact   301!
+/designs.html   /designs   301!
+/faq.html       /faq       301!
+/hire.html      /hire      301!
+/pricing.html   /pricing   301!
+/privacy.html   /privacy   301!
+/projects.html  /projects  301!
+/terms.html     /terms     301!
+/about          /about.html     200
+/contact        /contact.html   200
+/designs        /designs.html   200
+/faq            /faq.html       200
+/hire           /hire.html      200
+/pricing        /pricing.html   200
+/privacy        /privacy.html   200
+/projects       /projects.html  200
+/terms          /terms.html     200
