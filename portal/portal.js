@@ -1,4 +1,4 @@
-/* Pinchez Media 254 - Client Portal (front end). Works in demo mode or against Supabase. */
+/* Pinchez Media 254 - Client Portal (front end). Connects to Supabase. */
 (function () {
 'use strict';
 const C = window.PORTAL_CONFIG, B = C.BUSINESS;
@@ -22,83 +22,9 @@ const reload = () => window.__portalReload ? window.__portalReload() : location.
 const todayISO = () => new Date().toISOString().slice(0, 10);
 function toast(msg, bad) { const t = h('div', { class: 'modal', style: 'background:none;pointer-events:none;place-items:end center' }, h('div', { class: 'badge ' + (bad ? 'b-bad' : 'b-ok'), style: 'font-size:14px;padding:10px 18px;box-shadow:0 6px 24px #0005;margin-bottom:20px' }, msg)); document.body.append(t); setTimeout(() => t.remove(), 2600); }
 
-/* ---------------- DEMO ADAPTER (no backend) ---------------- */
-function DemoAdapter() {
-  const KEY = 'pm254_portal_demo_v1', SK = 'pm254_portal_demo_session';
-  const day = n => { const x = new Date(); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
-  const ts = n => { const x = new Date(); x.setDate(x.getDate() + n); return x.toISOString(); };
-  const seed = () => ({
-    users: [{ id: 'u-client', email: 'client@demo.test', password: 'demo1234' }, { id: 'u-admin', email: 'admin@demo.test', password: 'admin1234' }],
-    profiles: [
-      { id: 'u-client', email: 'client@demo.test', full_name: 'Amina Wanjiru', company: 'Wanjiru Hardware Ltd', phone: '+254 700 000 000', role: 'client', created_at: ts(-40) },
-      { id: 'u-admin', email: 'admin@demo.test', full_name: B.owner, company: B.name, phone: B.phone, role: 'admin', created_at: ts(-90) }],
-    projects: [
-      { id: 'p1', client_id: 'u-client', name: 'Business website', service: 'Website Development', status: 'In progress', progress: 68, start_date: day(-24), due_date: day(12), summary: 'Five-page responsive website with a contact form, product gallery and Google Business Profile set-up.', created_at: ts(-24) },
-      { id: 'p2', client_id: 'u-client', name: 'Point-of-sale system', service: 'Point-of-Sale Development', status: 'Planning', progress: 20, start_date: day(-3), due_date: day(45), summary: 'Sales, stock and daily-report system for the shop counter, with receipt printing.', created_at: ts(-3) }],
-    milestones: [
-      ['p1', 'Discovery and brief', 'done', -22], ['p1', 'Design approved', 'done', -14], ['p1', 'Pages built', 'done', -5], ['p1', 'Content and images', 'active', 3], ['p1', 'Testing and revisions', 'pending', 8], ['p1', 'Launch and handover', 'pending', 12],
-      ['p2', 'Requirements workshop', 'done', -2], ['p2', 'Prototype for approval', 'active', 10], ['p2', 'Build and testing', 'pending', 32], ['p2', 'Training and launch', 'pending', 45]
-    ].map((m, i) => ({ id: 'm' + i, project_id: m[0], title: m[1], status: m[2], due_date: day(m[3]), sort: i, created_at: ts(-30) })),
-    updates: [
-      { id: 'up1', project_id: 'p1', body: 'All five pages are built. Please send your product photos and shop opening hours so I can finish the content.', created_at: ts(-2) },
-      { id: 'up2', project_id: 'p1', body: 'Design approved. Moving on to building the pages.', created_at: ts(-14) },
-      { id: 'up3', project_id: 'p2', body: 'Requirements workshop done. I will share a clickable prototype within 10 days.', created_at: ts(-2) }],
-    invoices: [
-      { id: 'i1', client_id: 'u-client', project_id: 'p1', number: 'PM254-INV-2026-001', issue_date: day(-24), due_date: day(-17), items: [{ description: 'Website Development: deposit (50%)', qty: 1, unit_price: 12500 }], subtotal: 12500, discount: 0, vat: 0, total: 12500, notes: 'Thank you for choosing Pinchez Media 254.', created_at: ts(-24) },
-      { id: 'i2', client_id: 'u-client', project_id: 'p1', number: 'PM254-INV-2026-002', issue_date: day(-1), due_date: day(12), items: [{ description: 'Website Development: balance (50%)', qty: 1, unit_price: 12500 }], subtotal: 12500, discount: 0, vat: 0, total: 12500, notes: 'Due on delivery. Final files are released after payment.', created_at: ts(-1) },
-      { id: 'i3', client_id: 'u-client', project_id: 'p2', number: 'PM254-INV-2026-003', issue_date: day(-3), due_date: day(-1), items: [{ description: 'Point-of-Sale Development: deposit (50%)', qty: 1, unit_price: 5000 }], subtotal: 5000, discount: 0, vat: 0, total: 5000, notes: '', created_at: ts(-3) }],
-    payments: [{ id: 'pay1', invoice_id: 'i1', amount: 12500, method: 'M-Pesa', reference: 'DEMO7XK2LQ', paid_on: day(-20), created_at: ts(-20) }],
-    files: [
-      { id: 'f1', client_id: 'u-client', project_id: 'p1', name: 'Quotation PM254-Q-2026-014.pdf', category: 'Quotation', storage_path: 'demo/f1', size: 184320, created_at: ts(-26) },
-      { id: 'f2', client_id: 'u-client', project_id: 'p1', name: 'Service Agreement (signed).pdf', category: 'Agreement', storage_path: 'demo/f2', size: 256000, created_at: ts(-24) },
-      { id: 'f3', client_id: 'u-client', project_id: 'p1', name: 'Receipt PM254-RCT-2026-007.pdf', category: 'Receipt', storage_path: 'demo/f3', size: 90112, created_at: ts(-20) },
-      { id: 'f4', client_id: 'u-client', project_id: 'p1', name: 'Homepage design preview.png', category: 'Deliverable', storage_path: 'demo/f4', size: 1258291, created_at: ts(-12) },
-      { id: 'f5', client_id: 'u-client', project_id: 'p1', name: 'How to update your website.pdf', category: 'Guide', storage_path: 'demo/f5', size: 412672, created_at: ts(-1) }]
-  });
-  let db = JSON.parse(sessionStorage.getItem(KEY) || 'null') || seed();
-  const save = () => sessionStorage.setItem(KEY, JSON.stringify(db));
-  const uid = () => (JSON.parse(sessionStorage.getItem(SK) || 'null') || {}).id;
-  const me = () => db.profiles.find(p => p.id === uid());
-  const isAdmin = () => (me() || {}).role === 'admin';
-  const projOf = id => db.projects.find(p => p.id === id), invOf = id => db.invoices.find(i => i.id === id);
-  const visible = (t, r) => {
-    if (isAdmin()) return true; const u = uid();
-    if (t === 'profiles') return r.id === u; if (t === 'milestones' || t === 'updates') return (projOf(r.project_id) || {}).client_id === u;
-    if (t === 'payments') return (invOf(r.invoice_id) || {}).client_id === u; return r.client_id === u;
-  };
-  const summ = i => {
-    const paid = db.payments.filter(p => p.invoice_id === i.id).reduce((a, p) => a + Number(p.amount), 0), balance = Math.max(i.total - paid, 0);
-    return { ...i, paid, balance, status: balance <= 0 ? 'Paid' : i.due_date < day(0) ? 'Overdue' : paid > 0 ? 'Part-paid' : 'Due' };
-  };
-  const wait = () => new Promise(r => setTimeout(r, 120));
-  return {
-    mode: 'demo',
-    async getSession() { await wait(); const u = uid(); return u ? { user: { id: u }, profile: me() } : null; },
-    async signIn(e, p) { await wait(); const u = db.users.find(x => x.email === e.trim().toLowerCase() && x.password === p); if (!u) throw new Error('Wrong email or password.'); sessionStorage.setItem(SK, JSON.stringify({ id: u.id })); },
-    async signOut() { sessionStorage.removeItem(SK); },
-    async sendMagicLink(e) { await wait(); if (!db.users.some(x => x.email === e.trim().toLowerCase())) throw new Error('No client account uses that email.'); },
-    async resetPassword() { await wait(); },
-    async changePassword(pw) { await wait(); const u = db.users.find(x => x.id === uid()); u.password = pw; save(); },
-    async list(t, o) {
-      o = o || {}; let rows = (t === 'invoices' ? db.invoices.map(summ) : db[t]).filter(r => visible(t, r));
-      if (o.eq) rows = rows.filter(r => Object.entries(o.eq).every(([k, v]) => r[k] === v));
-      const k = o.order || 'created_at', dir = o.asc ? 1 : -1; return rows.slice().sort((a, b) => (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0) * dir);
-    },
-    async upsert(t, row) { await wait(); if (!isAdmin() && !(t === 'profiles' && row.id === uid())) throw new Error('Not allowed.'); const arr = db[t]; row = { ...row };
-      const i = row.id ? arr.findIndex(x => x.id === row.id) : -1; if (i >= 0) arr[i] = { ...arr[i], ...row }; else { row.id = row.id || 'd' + Math.random().toString(36).slice(2, 9); row.created_at = new Date().toISOString(); arr.push(row); }
-      save(); return i >= 0 ? arr[i] : row; },
-    async remove(t, id) { await wait(); if (!isAdmin()) throw new Error('Not allowed.'); db[t] = db[t].filter(x => x.id !== id);
-      if (t === 'projects') { db.milestones = db.milestones.filter(m => m.project_id !== id); db.updates = db.updates.filter(m => m.project_id !== id); }
-      if (t === 'invoices') db.payments = db.payments.filter(p => p.invoice_id !== id); save(); },
-    async upload(file, meta) { await wait(); const row = { id: 'f' + Math.random().toString(36).slice(2, 8), client_id: meta.client_id, project_id: meta.project_id || null, name: file.name, category: meta.category, storage_path: 'demo/' + file.name, size: file.size, created_at: new Date().toISOString() }; db.files.push(row); save(); return row; },
-    async fileUrl(row) { return URL.createObjectURL(new Blob(['DEMO FILE\n\nThis is a placeholder for: ' + row.name + '\nIn live mode the real file downloads here.'], { type: 'text/plain' })); },
-    resetDemo() { sessionStorage.removeItem(KEY); db = seed(); }
-  };
-}
-
 /* ---------------- SUPABASE ADAPTER ---------------- */
 function SupabaseAdapter() {
-  if (!window.supabase || /YOUR-/.test(C.SUPABASE_URL + C.SUPABASE_ANON_KEY)) throw new Error('Portal is not connected yet. Set SUPABASE_URL and SUPABASE_ANON_KEY in portal/config.js.');
+  if (!window.supabase || /YOUR-/.test(C.SUPABASE_URL + C.SUPABASE_ANON_KEY)) { console.warn('Portal not configured: set SUPABASE_URL and SUPABASE_ANON_KEY in portal/config.js'); throw new Error('The client portal is not open yet. Please contact ' + B.name + ' for access.'); }
   const sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   const ck = ({ data, error }) => { if (error) throw new Error(error.message); return data; };
   return {
@@ -119,12 +45,11 @@ function SupabaseAdapter() {
   };
 }
 let api;
-try { api = C.MODE === 'demo' ? DemoAdapter() : SupabaseAdapter(); } catch (e) { api = null; window.__portalError = e.message; }
+try { api = SupabaseAdapter(); } catch (e) { api = null; window.__portalError = e.message; }
 
 /* ---------------- shared UI ---------------- */
 if (api) {
   api.updateProfile = api.updateProfile || (async (patch, id) => { const s = await api.getSession(); id = id || s.user.id;
-    if (api.mode === 'demo') return api.upsert('profiles', { id, ...patch });
     const { data, error } = await api.sb.from('profiles').update(patch).eq('id', id).select().single(); if (error) throw new Error(error.message); return data; });
   api.removeFile = api.removeFile || (async row => { if (api.mode === 'supabase') await api.sb.storage.from('client-files').remove([row.storage_path]); return api.remove('files', row.id); });
 }
@@ -165,7 +90,6 @@ async function guard(role) {
 }
 function chrome(s, label, switchTo) {
   const out = [];
-  if (api.mode === 'demo') out.push(h('div', { class: 'demo' }, 'Demo mode: sample data only. ', h('button', { class: 'btn sm', style: 'margin-left:8px;border-color:#0B1033;color:#0B1033', onclick: () => { api.resetDemo(); reload(); } }, 'Reset demo data')));
   out.push(h('header', { class: 'top' }, h('div', { class: 'wrap' }, h('a', { class: 'brand', href: '/portal/' }, h('img', { src: '/logo.png', alt: '' }), h('span', {}, B.name, h('span', { class: 'small', style: 'display:block;font-weight:500;opacity:.85' }, label))),
     h('span', { class: 'sp' }), h('span', { class: 'who', text: s.profile.full_name || s.profile.email || '' }),
     h('a', { class: 'btn sm', href: '/' }, 'Website'),
@@ -220,10 +144,8 @@ async function initLogin() {
       h('button', { type: 'button', onclick: async () => { if (!email.value) return say('Enter your email first.'); try { await api.resetPassword(email.value); say('If that email has an account, a reset link is on its way.', true); } catch (e) { say(e.message); } } }, 'Forgot password?')));
   form.addEventListener('submit', async e => { e.preventDefault(); say(''); if (!email.value || !pw.value) return say('Enter your email and password.'); go.disabled = true; go.textContent = 'Signing in\u2026';
     try { await api.signIn(email.value, pw.value); const s = await api.getSession(); navTo(s.profile.role === 'admin' ? '/portal/admin.html' : '/portal/app.html'); } catch (x) { say(x.message === 'Invalid login credentials' ? 'Wrong email or password.' : x.message); go.disabled = false; go.textContent = 'Sign in'; } });
-  const demo = api.mode === 'demo' ? h('div', { class: 'card', style: 'margin-top:14px;background:var(--warnbg);border-color:var(--tang)' }, h('b', { text: 'Demo mode' }), h('p', { class: 'small', style: 'margin:4px 0 8px', text: 'Sample data only. Try a client or the admin console:' }),
-    h('div', { class: 'row' }, h('button', { class: 'btn sm', type: 'button', onclick: () => { email.value = 'client@demo.test'; pw.value = 'demo1234'; } }, 'Fill client login'), h('button', { class: 'btn sm', type: 'button', onclick: () => { email.value = 'admin@demo.test'; pw.value = 'admin1234'; } }, 'Fill admin login'))) : null;
   root.append(h('div', { class: 'login' }, h('div', { class: 'box' }, h('div', { class: 'card' }, h('div', { class: 'lg' }, h('img', { src: '/logo.png', alt: '' }), h('div', {}, h('h1', { text: 'Client portal' }), h('div', { class: 'muted small', text: B.name }))),
-    h('p', { class: 'muted', style: 'margin-top:0', text: 'Sign in to see your projects, progress, bills and files.' }), form), demo, h('p', { class: 'small muted', style: 'text-align:center;margin-top:16px' }, 'Need access? Contact ', h('a', { href: 'mailto:' + B.email, text: B.email }), ' \u00b7 ', h('a', { href: '/', text: 'Back to website' })))));
+    h('p', { class: 'muted', style: 'margin-top:0', text: 'Sign in to see your projects, progress, bills and files.' }), form), h('p', { class: 'small muted', style: 'text-align:center;margin-top:16px' }, 'Need access? Contact ', h('a', { href: 'mailto:' + B.email, text: B.email }), ' \u00b7 ', h('a', { href: '/', text: 'Back to website' })))));
 }
 
 /* ---------------- CLIENT DASHBOARD ---------------- */
@@ -385,7 +307,7 @@ async function initAdmin() {
       h('div', { class: 'grid g4' }, stat('Clients', String(clients().length)), stat('Active projects', String(D.projects.filter(p => p.status !== 'Delivered').length)), stat('Outstanding', KES(outstanding), over.length ? 'warn' : ''), stat('Overdue invoices', String(over.length), over.length ? 'warn' : '')),
       h('div', { class: 'card' }, h('h2', { text: 'Quick actions' }), h('div', { class: 'row' }, btn('New project', () => editProject(), 'pri'), btn('New invoice', () => invoiceBuilder(), 'pri'), btn('Record payment', () => paymentForm()), btn('Upload file', uploadForm))));
     const clientsNode = h('div', { class: 'grid' }, h('div', { class: 'hero' }, h('h1', { text: 'Clients' })),
-      h('div', { class: 'card' }, h('b', { text: 'Adding a client: ' }), api.mode === 'demo' ? 'In live mode, create the login in Supabase (Authentication > Users > Add user). They then appear here automatically so you can fill in their details.' : 'Create the login in Supabase: Authentication > Users > Add user (tick "Auto confirm user"). The client appears here automatically; then set their name and company, and add their first project.'),
+      h('div', { class: 'card' }, h('b', { text: 'Adding a client: ' }), 'Create the login in Supabase: Authentication > Users > Add user (tick "Auto confirm user"). The client appears here automatically; then set their name and company, and add their first project.'),
       table([{ t: 'Name' }, { t: 'Company' }, { t: 'Email' }, { t: 'Phone' }, { t: 'Projects', r: 1 }, { t: 'Owing', r: 1 }, { t: '' }], clients().map(c => [h('b', { text: c.full_name || '\u2014' }), c.company || '\u2014', c.email || '', c.phone || '\u2014', String(D.projects.filter(p => p.client_id === c.id).length), KES(D.invoices.filter(i => i.client_id === c.id).reduce((a, i) => a + Number(i.balance), 0)), btn('Edit', () => editClient(c))]), 'No clients yet.'));
     const projectsNode = h('div', { class: 'grid' }, h('div', { class: 'row' }, h('h1', { text: 'Projects', style: 'font-size:28px' }), h('span', { class: 'sp2' }), btn('+ New project', () => editProject(), 'pri')),
       D.projects.length ? D.projects.map(p => h('article', { class: 'card pj' }, h('div', { class: 'head' }, h('div', { style: 'flex:1;min-width:180px' }, h('h3', { text: p.name }), h('div', { class: 'small muted', text: cname(p.client_id) + ' \u00b7 ' + (p.service || '') + ' \u00b7 due ' + fmtDate(p.due_date) })), badge(p.status), h('b', { text: p.progress + '%' })), bar(p.progress),

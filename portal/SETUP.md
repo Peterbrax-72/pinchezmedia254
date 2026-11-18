@@ -1,6 +1,6 @@
 # Client Portal setup (about 20 minutes, no coding)
 
-The portal is already built. It needs a free database to store logins, projects, invoices and files. These steps connect it. Until you finish them it runs in **demo mode** with sample data (`client@demo.test` / `demo1234`, `admin@demo.test` / `admin1234`).
+The portal is already built. It needs a free database to store logins, projects, invoices and files. These steps connect it. Until you finish them, anyone who opens `/portal/` sees a polite "not open yet" notice and nobody can sign in.
 
 ## 1. Create the database (Supabase, free plan)
 1. Go to https://supabase.com, sign up and click **New project**. Name it `pinchezmedia254-portal`, choose a strong database password (save it in a password manager) and the region closest to you (Frankfurt or London).
@@ -26,7 +26,6 @@ The portal is already built. It needs a free database to store logins, projects,
 ## 5. Connect the website to the database
 1. **Project Settings > API**: copy the **Project URL** and the **anon public** key.
 2. Open `portal/config.js` and set:
-   - `MODE: 'supabase'`
    - `SUPABASE_URL: 'https://xxxx.supabase.co'`
    - `SUPABASE_ANON_KEY: '...the anon public key...'`
    - your real `PAYMENT` details (M-Pesa, bank, PayPal), which clients see under "How to pay".
@@ -59,7 +58,7 @@ Test everything once with a dummy client account before inviting real clients.
 ## Troubleshooting
 | Symptom | Fix |
 |---|---|
-| "Portal is not connected yet" | `config.js` still has the `YOUR-...` placeholders, or `MODE` is not `'supabase'` |
+| "The client portal is not open yet" | `config.js` still has the `YOUR-...` placeholders: add your Supabase URL and anon key (step 5) |
 | Sign-in says wrong email or password | Create the user in Supabase first (sign-ups are off on purpose) and tick Auto Confirm |
 | Signed in but the admin console bounces to the client page | Run the `update public.profiles set role = 'admin'...` SQL for your email |
 | Client sees no projects | The project's client must be that client (check the Client dropdown) |

@@ -2,9 +2,6 @@
    The anon key below is PUBLIC by design (it is protected by the database rules in schema.sql).
    NEVER put the "service_role" key here. */
 window.PORTAL_CONFIG = {
-  // 'demo'     = sample data in the browser, no backend (for previewing the portal)
-  // 'supabase' = real logins and data (set the two values below first)
-  MODE: 'demo',
   SUPABASE_URL: 'https://YOUR-PROJECT-ID.supabase.co',
   SUPABASE_ANON_KEY: 'YOUR-ANON-PUBLIC-KEY',
 
