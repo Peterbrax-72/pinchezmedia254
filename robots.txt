@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /portal/
-
-Sitemap: https://pinchezmedia254.netlify.app/sitemap.xml

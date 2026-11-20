@@ -26,8 +26,8 @@ The portal is already built. It needs a free database to store logins, projects,
 ## 5. Connect the website to the database
 1. **Project Settings > API**: copy the **Project URL** and the **anon public** key.
 2. Open `portal/config.js` and set:
-   - `SUPABASE_URL: 'https://xxxx.supabase.co'`
-   - `SUPABASE_ANON_KEY: '...the anon public key...'`
+   - `SUPABASE_URL: 'https://jdhxelhsfimxavwnzucl.supabase.co'`
+   - `SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkaHhlbGhzZmlteGF2d256dWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1ODI0ODIsImV4cCI6MjEwOTE1ODQ4Mn0.oCXemPqtaWGL1ciAlML1MffB2gjJz9rVyiE6CRiFxu0'`
    - your real `PAYMENT` details (M-Pesa, bank, PayPal), which clients see under "How to pay".
 3. The anon key is meant to be public. **Never paste the `service_role` key anywhere in the website.**
 
