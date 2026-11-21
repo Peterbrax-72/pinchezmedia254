@@ -18,7 +18,7 @@ window.PORTAL_CONFIG = {
   // Shown to clients under "How to pay". Replace the [brackets].
   PAYMENT: {
     mpesa: '[Pochi - 0115865866]',
-    bank: '[Bank, branch, account name and number]',
+    bank: '[KCB Bank, 522522, ******]',
     paypal: '[sirpeterbaraka@gmail.com]'
   },
   VAT_RATE: 0.16,
