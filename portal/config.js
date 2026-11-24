@@ -2,10 +2,16 @@
    The anon key below is PUBLIC by design (it is protected by the database rules in schema.sql).
    NEVER put the "service_role" key here. */
 window.PORTAL_CONFIG = {
-  SUPABASE_URL: 'https://jdhxelhsfimxavwnzucl.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkaHhlbGhzZmlteGF2d256dWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1ODI0ODIsImV4cCI6MjEwOTE1ODQ4Mn0.oCXemPqtaWGL1ciAlML1MffB2gjJz9rVyiE6CRiFxu0',
+  SUPABASE_URL: 'https://YOUR-PROJECT-ID.supabase.co',
+  SUPABASE_ANON_KEY: 'YOUR-ANON-PUBLIC-KEY',
 
   CURRENCY: 'KES',
+  // Security settings (see SECURITY.md)
+  SESSION: { clientIdleMin: 30, adminIdleMin: 15, clientMaxHours: 12, adminMaxHours: 8, warnSeconds: 60 },
+  LOGIN: { maxFreeAttempts: 5, baseLockSeconds: 30, maxLockSeconds: 3600 },
+  TURNSTILE_SITE_KEY: '',   // optional CAPTCHA: paste a Cloudflare Turnstile site key (see SECURITY.md)
+  // Defaults used when generating documents (you can change them per document)
+  DOC: { depositPct: 50, payDays: 7, validDays: 14, revisions: 2, supportDays: 30, feedbackDays: 3, acceptDays: 5, noticeDays: 7, lateFeePct: 0, law: 'Kenya', vatRegistered: false },
   BUSINESS: {
     name: 'Pinchez Media 254',
     owner: 'Peter Baraka Philip',
@@ -13,13 +19,14 @@ window.PORTAL_CONFIG = {
     phone: '+254 115 865 866',
     whatsapp: '254115865866',
     site: 'pinchezmedia254.netlify.app',
-    location: 'Thika, Kenya'
+    location: 'Thika, Kenya',
+    kraPin: ''
   },
   // Shown to clients under "How to pay". Replace the [brackets].
   PAYMENT: {
-    mpesa: '[Pochi - 0115865866]',
-    bank: '[KCB Bank, 522522, ******]',
-    paypal: '[sirpeterbaraka@gmail.com]'
+    mpesa: '[M-Pesa Paybill / Till number and account]',
+    bank: '[Bank, branch, account name and number]',
+    paypal: '[PayPal email or link]'
   },
   VAT_RATE: 0.16,
   OFFER_DISCOUNT: 0.05,
