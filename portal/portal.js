@@ -30,14 +30,8 @@ function SupabaseAdapter() {
   return {
     mode: 'supabase', sb,
     async getSession() { const { data: { session } } = await sb.auth.getSession(); if (!session) return null; const profile = ck(await sb.from('profiles').select('*').eq('id', session.user.id).single()); return { user: session.user, profile }; },
-    async signIn(email, password, captchaToken) { ck(await sb.auth.signInWithPassword({ email: email.trim(), password, options: captchaToken ? { captchaToken } : undefined })); },
-    async signOut(scope) { await sb.auth.signOut({ scope: scope || 'local' }); },
-    async mfaStatus() { const { data, error } = await sb.auth.mfa.getAuthenticatorAssuranceLevel(); if (error) throw new Error(error.message); return { current: data.currentLevel, next: data.nextLevel }; },
-    async mfaFactors() { const { data, error } = await sb.auth.mfa.listFactors(); if (error) throw new Error(error.message); return { verified: data.totp || [], all: data.all || [] }; },
-    async mfaEnroll() { const cur = await this.mfaFactors(); for (const f of cur.all) if (f.status === 'unverified') await sb.auth.mfa.unenroll({ factorId: f.id });
-      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Authenticator ' + new Date().toISOString().slice(0, 10) }); if (error) throw new Error(error.message); return { id: data.id, qr: data.totp.qr_code, secret: data.totp.secret }; },
-    async mfaVerify(factorId, code) { const { error } = await sb.auth.mfa.challengeAndVerify({ factorId, code }); if (error) throw new Error('That code is not correct.'); },
-    async mfaRemove(factorId) { const { error } = await sb.auth.mfa.unenroll({ factorId }); if (error) throw new Error(error.message); },
+    async signIn(email, password) { ck(await sb.auth.signInWithPassword({ email: email.trim(), password })); },
+    async signOut() { await sb.auth.signOut(); },
     async sendMagicLink(email) { ck(await sb.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false, emailRedirectTo: location.origin + '/portal/app.html' } })); },
     async resetPassword(email) { ck(await sb.auth.resetPasswordForEmail(email.trim(), { redirectTo: location.origin + '/portal/app.html?reset=1' })); },
     async changePassword(password) { ck(await sb.auth.updateUser({ password })); },
@@ -92,8 +86,6 @@ async function guard(role) {
   if (!s) { navTo('/portal/'); return null; }
   if (role === 'admin' && s.profile.role !== 'admin') { navTo('/portal/app.html'); return null; }
   if (role === 'client' && s.profile.role === 'admin') { navTo('/portal/admin.html'); return null; }
-  try { const m = await api.mfaStatus(); if (m.next === 'aal2' && m.current !== 'aal2') { navTo('/portal/'); return null; } } catch (e) { /* ignore */ }
-  if (window.PMSecurity) window.PMSecurity.startSession(s.profile.role);
   return s;
 }
 function chrome(s, label, switchTo) {
@@ -101,7 +93,7 @@ function chrome(s, label, switchTo) {
   out.push(h('header', { class: 'top' }, h('div', { class: 'wrap' }, h('a', { class: 'brand', href: '/portal/' }, h('img', { src: '/logo.png', alt: '' }), h('span', {}, B.name, h('span', { class: 'small', style: 'display:block;font-weight:500;opacity:.85' }, label))),
     h('span', { class: 'sp' }), h('span', { class: 'who', text: s.profile.full_name || s.profile.email || '' }),
     h('a', { class: 'btn sm', href: '/' }, 'Website'),
-    h('button', { class: 'btn sm', onclick: async () => { if (window.PMSecurity) window.PMSecurity.clear(); await api.signOut('local'); navTo('/portal/'); } }, 'Sign out'))));
+    h('button', { class: 'btn sm', onclick: async () => { await api.signOut(); navTo('/portal/'); } }, 'Sign out'))));
   return out;
 }
 function tabsUI(defs, root) {
@@ -138,9 +130,25 @@ function showInvoice(inv, client, payments) {
   const close = modal([invoiceNode(inv, client, payments, 'invview'), h('div', { class: 'acts', style: 'margin-top:16px' }, h('button', { class: 'btn', onclick: () => close() }, 'Close'), printBtn)], true);
 }
 
-/* ---------------- LOGIN PAGE (implemented in security.js) ---------------- */
 window.PM = { h, modal, openForm, toast, KES, fmtDate, fmtSize, todayISO, navTo, table, badge, bar, copy, C, B, get api() { return api; } };
-async function initLogin() { return window.PMSecurity.initLogin(); }
+
+/* ---------------- LOGIN PAGE ---------------- */
+async function initLogin() {
+  const root = $('#app');
+  if (!api) { root.append(h('div', { class: 'login' }, h('div', { class: 'card box' }, h('h1', { text: 'Client portal' }), h('p', { class: 'muted', text: window.__portalError })))); return; }
+  try { const s = await api.getSession(); if (s) { navTo(s.profile.role === 'admin' ? '/portal/admin.html' : '/portal/app.html'); return; } } catch (e) { /* not signed in */ }
+  const email = h('input', { type: 'email', name: 'email', autocomplete: 'username', required: true, inputmode: 'email' }), pw = h('input', { type: 'password', name: 'password', autocomplete: 'current-password' });
+  const msg = h('div', { class: 'err', role: 'alert', 'aria-live': 'polite' }), go = h('button', { class: 'btn pri', type: 'submit' }, 'Sign in');
+  const say = (t, good) => { msg.className = good ? 'ok' : 'err'; msg.textContent = t; };
+  const form = h('form', { class: 'form', novalidate: true }, h('label', {}, 'Email', email), h('label', {}, 'Password', pw), msg, go,
+    h('div', { class: 'links' },
+      h('button', { type: 'button', onclick: async () => { if (!email.value) return say('Enter your email first.'); try { await api.sendMagicLink(email.value); say('Check your inbox for a sign-in link.', true); } catch (e) { say(e.message); } } }, 'Email me a sign-in link'),
+      h('button', { type: 'button', onclick: async () => { if (!email.value) return say('Enter your email first.'); try { await api.resetPassword(email.value); say('If that email has an account, a reset link is on its way.', true); } catch (e) { say(e.message); } } }, 'Forgot password?')));
+  form.addEventListener('submit', async e => { e.preventDefault(); say(''); if (!email.value || !pw.value) return say('Enter your email and password.'); go.disabled = true; go.textContent = 'Signing in\u2026';
+    try { await api.signIn(email.value, pw.value); const s = await api.getSession(); navTo(s.profile.role === 'admin' ? '/portal/admin.html' : '/portal/app.html'); } catch (x) { say(x.message === 'Invalid login credentials' ? 'Wrong email or password.' : x.message); go.disabled = false; go.textContent = 'Sign in'; } });
+  root.append(h('div', { class: 'login' }, h('div', { class: 'box' }, h('div', { class: 'card' }, h('div', { class: 'lg' }, h('img', { src: '/logo.png', alt: '' }), h('div', {}, h('h1', { text: 'Client portal' }), h('div', { class: 'muted small', text: B.name }))),
+    h('p', { class: 'muted', style: 'margin-top:0', text: 'Sign in to see your projects, progress, bills and files.' }), form), h('p', { class: 'small muted', style: 'text-align:center;margin-top:16px' }, 'Need access? Contact ', h('a', { href: 'mailto:' + B.email, text: B.email }), ' \u00b7 ', h('a', { href: '/', text: 'Back to website' })))));
+}
 
 /* ---------------- CLIENT DASHBOARD ---------------- */
 async function initApp() {
@@ -208,9 +216,9 @@ async function initApp() {
     h('div', { class: 'grid g2' }, cats.map(c => h('div', { class: 'card' }, h('h2', { text: c }), C.SERVICES.filter(x => x.cat === c).map(x => h('div', { class: 'row', style: 'padding:8px 0;border-top:1px solid var(--line)' }, h('span', { text: x.name }), h('span', { class: 'sp2' }), h('b', { text: KES(x.price) }), h('a', { class: 'btn sm', href: '/contact?service=' + encodeURIComponent(x.name) }, 'Request')))))));
 
   /* account */
-  const pwForm = h('form', { class: 'form', novalidate: true }); const p1 = h('input', { type: 'password', autocomplete: 'new-password', maxlength: 128 }), p2 = h('input', { type: 'password', autocomplete: 'new-password' }), pm = h('div', { class: 'err', role: 'alert' });
-  pwForm.append(h('label', {}, 'New password (10+ characters, letters and a number)', p1), h('label', {}, 'Repeat new password', p2), pm, h('button', { class: 'btn pri', type: 'submit' }, 'Update password'));
-  pwForm.addEventListener('submit', async e => { e.preventDefault(); pm.className = 'err'; { const prob = window.PMSecurity.passwordProblem(p1.value, me.email || ''); if (prob) return void (pm.textContent = prob); } if (p1.value !== p2.value) return void (pm.textContent = 'The two passwords do not match.');
+  const pwForm = h('form', { class: 'form', novalidate: true }); const p1 = h('input', { type: 'password', autocomplete: 'new-password', minlength: 8 }), p2 = h('input', { type: 'password', autocomplete: 'new-password' }), pm = h('div', { class: 'err', role: 'alert' });
+  pwForm.append(h('label', {}, 'New password (8+ characters)', p1), h('label', {}, 'Repeat new password', p2), pm, h('button', { class: 'btn pri', type: 'submit' }, 'Update password'));
+  pwForm.addEventListener('submit', async e => { e.preventDefault(); pm.className = 'err'; if (p1.value.length < 8) return void (pm.textContent = 'Use at least 8 characters.'); if (p1.value !== p2.value) return void (pm.textContent = 'The two passwords do not match.');
     try { await api.changePassword(p1.value); pm.className = 'ok'; pm.textContent = 'Password updated.'; p1.value = p2.value = ''; } catch (x) { pm.textContent = x.message; } });
   const account = h('div', { class: 'grid' }, h('div', { class: 'hero' }, h('h1', { text: 'Your account' })),
     h('div', { class: 'grid g2' },
@@ -220,7 +228,6 @@ async function initApp() {
       h('div', { class: 'card' }, h('h2', { text: 'Need help?' }), h('p', { class: 'muted', style: 'margin-top:0', text: 'Reach Peter directly. Quote your project or invoice number so it can be found quickly.' }),
         h('div', { class: 'row' }, h('a', { class: 'btn sun', target: '_blank', rel: 'noopener', href: wa('Hello Peter, I need help with my account.') }, 'WhatsApp'), h('a', { class: 'btn', href: 'mailto:' + B.email }, 'Email'), h('a', { class: 'btn', href: 'tel:' + B.phone.replace(/\s/g, '') }, 'Call')))));
 
-  account.append(window.PMSecurity.card(false, me.email || s.user.email));
   root.append(...chrome(s, 'Client portal'));
   const main = h('main', { class: 'wrap' });
   tabs = tabsUI([{ id: 'overview', label: 'Overview', node: overview }, { id: 'projects', label: 'Projects', node: projectsNode, badge: active.length || '' }, { id: 'billing', label: 'Billing', node: billing, badge: owing.length || '' }, { id: 'files', label: 'Files', node: filesNode }, { id: 'services', label: 'Services', node: services }, { id: 'account', label: 'Account', node: account }], main);
@@ -314,8 +321,8 @@ async function initAdmin() {
     const filesNode = h('div', { class: 'grid' }, h('div', { class: 'row' }, h('h1', { text: 'Files', style: 'font-size:28px' }), h('span', { class: 'sp2' }), btn('+ Upload file', uploadForm, 'pri')),
       table([{ t: 'File' }, { t: 'Client' }, { t: 'Project' }, { t: 'Category' }, { t: 'Added', nw: 1 }, { t: 'Size', nw: 1 }, { t: '' }], D.files.map(f => [h('b', { text: f.name }), cname(f.client_id), pname(f.project_id), f.category, fmtDate(f.created_at), fmtSize(f.size),
         h('div', { class: 'row' }, btn('Download', async () => { try { const u = await api.fileUrl(f); const a = h('a', { href: u, download: f.name }); document.body.append(a); a.click(); a.remove(); } catch (x) { toast(x.message, true); } }), btn('\u2715', () => { if (sure('Delete ' + f.name + '?')) act(() => api.removeFile(f), 'File deleted'); }, 'danger'))]), 'No files yet.'));
-    const docsNode = window.PMDocs.adminTab({ get D() { return D; }, cname, act, refresh: async () => { D = await load(); render(); } }); const securityNode = window.PMSecurity.card(true, s.profile.email || s.user.email);
-    main.replaceChildren(); const t = tabsUI([{ id: 'overview', label: 'Overview', node: overview }, { id: 'clients', label: 'Clients', node: clientsNode, badge: clients().length || '' }, { id: 'projects', label: 'Projects', node: projectsNode }, { id: 'billing', label: 'Billing', node: billing, badge: over.length || '' }, { id: 'files', label: 'Files', node: filesNode }, { id: 'docs', label: 'Documents', node: docsNode }, { id: 'security', label: 'Security', node: securityNode }], main);
+    const docsNode = window.PMDocs.adminTab({ get D() { return D; }, cname, act, refresh: async () => { D = await load(); render(); } });
+    main.replaceChildren(); const t = tabsUI([{ id: 'overview', label: 'Overview', node: overview }, { id: 'clients', label: 'Clients', node: clientsNode, badge: clients().length || '' }, { id: 'projects', label: 'Projects', node: projectsNode }, { id: 'billing', label: 'Billing', node: billing, badge: over.length || '' }, { id: 'files', label: 'Files', node: filesNode }, { id: 'docs', label: 'Documents', node: docsNode }], main);
     main.prepend(t.bar); t.show(cur); t.bar.addEventListener('click', e => { const b = e.target.closest('.tab'); if (b) cur = b.dataset.tab; });
   }
   const main = h('main', { class: 'wrap' }); D = await load(); root.append(...chrome(s, 'Admin console'), main); render();

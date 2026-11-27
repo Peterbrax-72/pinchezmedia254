@@ -26,8 +26,8 @@ The portal is already built. It needs a free database to store logins, projects,
 ## 5. Connect the website to the database
 1. **Project Settings > API**: copy the **Project URL** and the **anon public** key.
 2. Open `portal/config.js` and set:
-   - `SUPABASE_URL: 'https://jdhxelhsfimxavwnzucl.supabase.co'`
-   - `SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkaHhlbGhzZmlteGF2d256dWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1ODI0ODIsImV4cCI6MjEwOTE1ODQ4Mn0.oCXemPqtaWGL1ciAlML1MffB2gjJz9rVyiE6CRiFxu0'`
+   - `SUPABASE_URL: 'https://xxxx.supabase.co'`
+   - `SUPABASE_ANON_KEY: '...the anon public key...'`
    - your real `PAYMENT` details (M-Pesa, bank, PayPal), which clients see under "How to pay".
 3. The anon key is meant to be public. **Never paste the `service_role` key anywhere in the website.**
 
@@ -48,6 +48,12 @@ Netlify publishes it in about a minute. Open `https://pinchezmedia254.netlify.ap
 5. **Files > Upload**: quotations, agreements, receipts, guides and finished work. Clients download through private links that expire after one minute.
 
 Test everything once with a dummy client account before inviting real clients.
+
+## Already set up? Add the documents update
+If your database is already running, do this once: Supabase > SQL Editor > paste `portal/schema-update.sql` > Run. It adds the **Documents** feature.
+
+## Generating documents (no uploading)
+Admin console > **Documents > New document**: choose the type (quotation, service agreement, receipt, payment reminder, handover certificate, change request, client onboarding brief), the client and the project. The portal fills in their details and your payment terms from `config.js`; add the specifics, **Preview**, then **Issue to client**. It appears in the client's **Files** tab, where they can open it, print or save it as PDF, or download it as Word. Edit the default terms (deposit, payment days, revisions and so on) in `config.js` under `DOC`.
 
 ## Day-to-day
 - Update a project's progress and milestones weekly, and post a short update. It is the main reason clients log in.

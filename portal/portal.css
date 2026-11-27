@@ -78,3 +78,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--cobalt);outline:none}
 .inv{display:none}
 @media print{body *{visibility:hidden}.inv,.inv *{visibility:visible}.inv{display:block;position:absolute;inset:0;background:#fff;color:#000;padding:28px;font-size:13px}.inv table{font-size:12px}.top,.tabs,.demo,.modal{display:none!important}}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+/* bot honeypot (hidden from people) */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+/* generated documents (always light, like paper) */
+.doc{background:#fff;color:#0B1033;font:13px/1.55 Arial,Helvetica,sans-serif;padding:26px 28px;border-radius:10px;border:1px solid #D5D9E8}
+.doc h2{font:700 15px Arial,sans-serif;color:#2338D6;border-left:4px solid #FF7A1A;padding-left:8px;margin:18px 0 8px}
+.doc h3{font:700 13px Arial,sans-serif;margin:12px 0 2px}.doc p{margin:6px 0}.doc ul,.doc ol{margin:6px 0;padding-left:20px}
+.dh{display:flex;align-items:center;gap:12px;border-bottom:3px solid #2338D6;padding-bottom:10px}.dh img{width:52px;height:52px;border-radius:10px}
+.dn b{display:block;color:#2338D6;font-size:19px}.dn span,.dt span{font-size:11px;color:#5A6078}.dt{margin-left:auto;text-align:right}.dt b{display:block;color:#FF7A1A;font-size:15px}
+.dmeta{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0;font-size:12px;color:#5A6078}
+.dkv,.dtb{border-collapse:collapse;width:100%;margin:8px 0;font-size:12px}
+.dkv th{width:34%;background:#EEF1FF;text-align:left;padding:7px 9px;border:1px solid #D5D9E8;text-transform:none;letter-spacing:0;font-size:12px;color:#0B1033}
+.dkv td,.dtb td{padding:7px 9px;border:1px solid #D5D9E8;color:#0B1033;background:#fff}
+.dtb th{background:#2338D6;color:#fff;padding:7px 9px;border:1px solid #2338D6;text-align:left;font-size:11px;text-transform:none;letter-spacing:0}
+.dtb th.r,.dtb td.r{text-align:right}.dtb tr.strong td{background:#FFE8D6;font-weight:700}
+.df{margin-top:20px;border-top:2px solid #FF7A1A;padding-top:8px;text-align:center;font-size:10.5px;color:#5A6078}
+.docprint{display:none}
+@media print{@page{size:A4;margin:12mm}.docprint{display:block!important;position:absolute;left:0;top:0;width:100%;border:0;border-radius:0;padding:0}.docprint,.docprint *{visibility:visible}.doc h2,.dkv,.dtb tr{break-inside:avoid}}

@@ -6,10 +6,6 @@ window.PORTAL_CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkaHhlbGhzZmlteGF2d256dWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1ODI0ODIsImV4cCI6MjEwOTE1ODQ4Mn0.oCXemPqtaWGL1ciAlML1MffB2gjJz9rVyiE6CRiFxu0',
 
   CURRENCY: 'KES',
-  // Security settings (see SECURITY.md)
-  SESSION: { clientIdleMin: 30, adminIdleMin: 15, clientMaxHours: 12, adminMaxHours: 8, warnSeconds: 60 },
-  LOGIN: { maxFreeAttempts: 5, baseLockSeconds: 30, maxLockSeconds: 3600 },
-  TURNSTILE_SITE_KEY: '',   // optional CAPTCHA: paste a Cloudflare Turnstile site key (see SECURITY.md)
   // Defaults used when generating documents (you can change them per document)
   DOC: { depositPct: 50, payDays: 7, validDays: 14, revisions: 2, supportDays: 30, feedbackDays: 3, acceptDays: 5, noticeDays: 7, lateFeePct: 0, law: 'Kenya', vatRegistered: false },
   BUSINESS: {
@@ -24,7 +20,7 @@ window.PORTAL_CONFIG = {
   },
   // Shown to clients under "How to pay". Replace the [brackets].
   PAYMENT: {
-    mpesa: '[[Pochi - 0115865866]',
+    mpesa: '[Pochi - 0115865866]',
     bank: '[KCB Bank, 522522, ******]',
     paypal: '[sirpeterbaraka@gmail.com]'
   },
